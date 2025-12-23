@@ -1,0 +1,79 @@
+.kanban-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 20px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.2); /* Sedikit transparan */
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.search-bar {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: none;
+  background-color: #0044FF;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+}
+.search-bar::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.icon-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+.icon-btn:hover { transform: scale(1.1); }
+.btn-add { background-color: #0044FF; }
+.btn-delete { background-color: #0044FF; }
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.board-column {
+  background-color: #FFF8E7;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.task-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}

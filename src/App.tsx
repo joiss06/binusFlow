@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
+import KanbanBoard from './components/KanbanBoard';
 // import Dashboard from './pages/Dashboard';
 // import Configuration from './pages/Configuration';
 
@@ -13,7 +14,7 @@ function App() {
           <Routes>
             {/* <Route path="/" element={<Dashboard />} /> */}
             {/* <Route path="/config" element={<Configuration />} /> */}
-             <Route path="/" element={<h1 style={{color: 'white'}}>Halaman Dashboard</h1>} />
+             <Route path="/" element={<KanbanBoard />} />
              <Route path="/config" element={<h1 style={{color: 'white'}}>Halaman Config</h1>} />
           </Routes>
         </div>
