@@ -13,13 +13,13 @@ const TaskCard = ({ task, isFocused, onClick, onDeleteClick }: TaskCardProps) =>
     <div 
       className="task-card-wrapper"
       onClick={(e) => {
-        e.stopPropagation(); // Supaya klik tidak tembus ke background
+        e.stopPropagation();
         onClick();
       }}
       style={{
         position: 'relative',
-        transform: isFocused ? 'scale(1.05)' : 'scale(1)', // Efek Membesar
-        zIndex: isFocused ? 10 : 1, // Supaya muncul di paling atas saat membesar
+        transform: isFocused ? 'scale(1.05)' : 'scale(1)',
+        zIndex: isFocused ? 10 : 1,
         transition: 'transform 0.2s ease',
       }}
     >
@@ -46,11 +46,11 @@ const TaskCard = ({ task, isFocused, onClick, onDeleteClick }: TaskCardProps) =>
     >
       {task.title}
     </div>
-    
+
     {isFocused && (
         <button
           onClick={(e) => {
-            e.stopPropagation(); // Jangan trigger klik kartu
+            e.stopPropagation();
             onDeleteClick();
           }}
           style={{

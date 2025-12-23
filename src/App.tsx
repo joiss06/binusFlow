@@ -34,7 +34,7 @@ function App() {
       const tasks = JSON.parse(localStorage.getItem('binusFlowTasks') || '[]');
       const updatedTasks = tasks.map((t: any) => {
         if (t.color === colorToDelete.value) {
-          return { ...t, color: '#FFF8E7' }; 
+          return { ...t, color: '#FF8C42' }; 
         }
         return t;
       });

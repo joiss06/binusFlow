@@ -6,13 +6,11 @@ import Modal from './Modal';
 import './KanbanBoard.css';
 import type { Task } from '../types';
 
-// Kita terima data warna dari App.tsx lewat sini
 interface KanbanBoardProps {
   availableColors: { id: string; value: string }[];
 }
 
 const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
-  // --- STATE ---
   const [tasks, setTasks] = useState<Task[]>(() => {
     const saved = localStorage.getItem('binusFlowTasks');
     return saved ? JSON.parse(saved) : [];
@@ -24,21 +22,17 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
   const [focusedTaskId, setFocusedTaskId] = useState<string | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
-  // State Form Input
   const [searchQuery, setSearchQuery] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<Task['status']>('To Do');
   
-  // Default warna ambil yang pertama dari list, atau putih kalau list kosong
-  const [color, setColor] = useState(availableColors[0]?.value || '#FFFFFF');
+  const [color, setColor] = useState(availableColors[0]?.value || '#FF8C42');
 
-  // Save to LocalStorage
   useEffect(() => {
     localStorage.setItem('binusFlowTasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  // Update default color jika availableColors berubah (misal user hapus warna)
   useEffect(() => {
     if (availableColors.length > 0) {
       setColor(availableColors[0].value);
@@ -60,10 +54,9 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
     setTitle('');
     setDescription('');
     setStatus('To Do');
-    setColor(availableColors[0]?.value || '#FFFFFF');
+    setColor(availableColors[0]?.value || '#FF8C42');
   };
 
-  // --- LOGIC: CREATE TASK ---
   const handleSaveTask = () => {
     if (!title.trim()) {
       alert("Judul tidak boleh kosong!");
@@ -81,17 +74,8 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
     resetForm();
   };
 
-  // --- LOGIC: DELETE SINGLE TASK ---
-  const handleDeleteTask = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
-      const updatedTasks = tasks.filter(t => t.id !== id);
-      setTasks(updatedTasks);
-      setSelectedTask(null);
-    }
-  };
-
   const confirmDeleteTask = (task: Task) => {
-    setTaskToDelete(task); // Simpan task yg mau dihapus & Buka Modal
+    setTaskToDelete(task);
   };
 
   const executeDeleteTask = () => {
@@ -99,20 +83,17 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
       const updatedTasks = tasks.filter(t => t.id !== taskToDelete.id);
       setTasks(updatedTasks);
       
-      // Bersihkan state
       setTaskToDelete(null); 
-      setFocusedTaskId(null); // Hilangkan fokus zoom juga
-      setSelectedTask(null);  // Tutup modal view jika sedang terbuka
+      setFocusedTaskId(null);
+      setSelectedTask(null);
     }
   };
 
-  // --- LOGIC: DELETE ALL TASKS ---
   const handleDeleteAll = () => {
     setTasks([]);
     setIsDeleteAllOpen(false);
   };
 
-  // --- LOGIC: DRAG AND DROP ---
   const onDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
     if (!destination) return;
@@ -128,19 +109,15 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
     setTasks(updatedTasks);
   };
 
-  // LOGIC: Menangani interaksi klik kartu 2 tahap
   const handleCardClick = (task: Task) => {
     if (focusedTaskId === task.id) {
-      // Jika sudah fokus dan diklik lagi -> Buka Modal View
       setSelectedTask(task);
-      setFocusedTaskId(null); // Reset fokus setelah modal buka
+      setFocusedTaskId(null);
     } else {
-      // Jika belum fokus -> Fokuskan (Besarkan icon)
       setFocusedTaskId(task.id);
     }
   };
 
-  // LOGIC: Klik background untuk menghilangkan fokus
   const handleBackgroundClick = () => {
     if (focusedTaskId) setFocusedTaskId(null);
   };
@@ -148,8 +125,6 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="kanban-container" onClick={handleBackgroundClick}>
-        
-        {/* TOOLBAR */}
         <div className="toolbar">
           <input 
             type="text" 
@@ -166,7 +141,6 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
           </button>
         </div>
 
-        {/* BOARD GRID */}
         <div className="board-grid">
           {['To Do', 'In Progress', 'Done'].map((colStatus) => (
             <Droppable key={colStatus} droppableId={colStatus}>
@@ -206,7 +180,6 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
           ))}
         </div>
 
-        {/* --- MODAL CREATE TASK --- */}
         <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Create New Task">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div>
@@ -225,7 +198,6 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
                 </select>
               </div>
               
-              {/* --- BAGIAN WARNA DINAMIS --- */}
               <div style={{ flex: 1 }}>
                 <label>Color</label>
                 <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
@@ -249,7 +221,6 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
           </div>
         </Modal>
 
-        {/* --- MODAL VIEW & DELETE ALL (Tidak berubah) --- */}
         <Modal isOpen={!!selectedTask} onClose={() => setSelectedTask(null)} title="View Task Details">
           {selectedTask && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -285,7 +256,6 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
               Are you sure you want to delete this task?
             </h3>
             
-            {/* Tampilkan Nama Task yg mau dihapus (Sesuai Gambar 4.2) */}
             <div style={{
               backgroundColor: '#FFF8E7',
               color: 'black',
