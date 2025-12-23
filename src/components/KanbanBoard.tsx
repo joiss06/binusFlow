@@ -21,6 +21,8 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDeleteAllOpen, setIsDeleteAllOpen] = useState(false);
+  const [focusedTaskId, setFocusedTaskId] = useState<string | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   // State Form Input
   const [searchQuery, setSearchQuery] = useState('');
@@ -88,6 +90,22 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
     }
   };
 
+  const confirmDeleteTask = (task: Task) => {
+    setTaskToDelete(task); // Simpan task yg mau dihapus & Buka Modal
+  };
+
+  const executeDeleteTask = () => {
+    if (taskToDelete) {
+      const updatedTasks = tasks.filter(t => t.id !== taskToDelete.id);
+      setTasks(updatedTasks);
+      
+      // Bersihkan state
+      setTaskToDelete(null); 
+      setFocusedTaskId(null); // Hilangkan fokus zoom juga
+      setSelectedTask(null);  // Tutup modal view jika sedang terbuka
+    }
+  };
+
   // --- LOGIC: DELETE ALL TASKS ---
   const handleDeleteAll = () => {
     setTasks([]);
@@ -110,9 +128,26 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
     setTasks(updatedTasks);
   };
 
+  // LOGIC: Menangani interaksi klik kartu 2 tahap
+  const handleCardClick = (task: Task) => {
+    if (focusedTaskId === task.id) {
+      // Jika sudah fokus dan diklik lagi -> Buka Modal View
+      setSelectedTask(task);
+      setFocusedTaskId(null); // Reset fokus setelah modal buka
+    } else {
+      // Jika belum fokus -> Fokuskan (Besarkan icon)
+      setFocusedTaskId(task.id);
+    }
+  };
+
+  // LOGIC: Klik background untuk menghilangkan fokus
+  const handleBackgroundClick = () => {
+    if (focusedTaskId) setFocusedTaskId(null);
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="kanban-container">
+      <div className="kanban-container" onClick={handleBackgroundClick}>
         
         {/* TOOLBAR */}
         <div className="toolbar">
@@ -156,9 +191,9 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            style={{ ...provided.draggableProps.style, marginBottom: '10px' }}
+                            style={{ ...provided.draggableProps.style, marginBottom: '15px' }}
                           >
-                            <TaskCard task={task} onClick={() => setSelectedTask(task)} />
+                            <TaskCard task={task} isFocused={focusedTaskId === task.id} onClick={() => handleCardClick(task)} onDeleteClick={() => confirmDeleteTask(task)} />
                           </div>
                         )}
                       </Draggable>
@@ -222,7 +257,7 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
               <div><label>Description</label><textarea rows={3} value={selectedTask.description} readOnly style={readOnlyStyle} /></div>
               <div><label>Status: </label><span style={{fontWeight: 'bold', color: '#FFF8E7'}}>{selectedTask.status}</span></div>
               <div className="modal-footer">
-                <button className="btn btn-secondary" style={{ backgroundColor: '#FF0000' }} onClick={() => handleDeleteTask(selectedTask.id)}>Delete Task</button>
+                <button className="btn btn-secondary" style={{ backgroundColor: '#FF0000' }} onClick={() => confirmDeleteTask(selectedTask)}>Delete Task</button>
                 <button className="btn btn-primary" onClick={() => setSelectedTask(null)}>Close</button>
               </div>
             </div>
@@ -236,6 +271,35 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
             <div className="modal-footer" style={{justifyContent: 'center', marginTop: '20px'}}>
                <button className="btn btn-primary" onClick={() => setIsDeleteAllOpen(false)}>Cancel</button>
                <button className="btn btn-secondary" onClick={handleDeleteAll}>Yes, Delete All</button>
+            </div>
+          </div>
+        </Modal>
+
+        <Modal 
+          isOpen={!!taskToDelete} 
+          onClose={() => setTaskToDelete(null)} 
+          title="Delete Task"
+        >
+          <div style={{ textAlign: 'center', padding: '10px' }}>
+            <h3 style={{color: 'white', marginBottom: '15px'}}>
+              Are you sure you want to delete this task?
+            </h3>
+            
+            {/* Tampilkan Nama Task yg mau dihapus (Sesuai Gambar 4.2) */}
+            <div style={{
+              backgroundColor: '#FFF8E7',
+              color: 'black',
+              padding: '10px',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              marginBottom: '20px'
+            }}>
+              {taskToDelete?.title}
+            </div>
+
+            <div className="modal-footer" style={{justifyContent: 'center'}}>
+               <button className="btn btn-primary" onClick={() => setTaskToDelete(null)}>Cancel</button>
+               <button className="btn btn-secondary" onClick={executeDeleteTask}>Delete</button>
             </div>
           </div>
         </Modal>
