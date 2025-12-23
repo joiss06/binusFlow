@@ -1,20 +1,17 @@
 import { useState, useEffect } from 'react';
 import { FaPlus, FaTrash, FaBolt, FaRunning, FaCheck } from 'react-icons/fa';
-import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd'; // <--- IMPORT PENTING
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import TaskCard from './TaskCard';
 import Modal from './Modal';
 import './KanbanBoard.css';
 import type { Task } from '../types';
 
-const COLOR_OPTIONS = [
-  { name: 'Red', value: '#FF5555' },
-  { name: 'Blue', value: '#5555FF' },
-  { name: 'Green', value: '#55FF55' },
-  { name: 'Yellow', value: '#FFFF55' },
-  { name: 'Purple', value: '#B155FF' },
-];
+// Kita terima data warna dari App.tsx lewat sini
+interface KanbanBoardProps {
+  availableColors: { id: string; value: string }[];
+}
 
-const KanbanBoard = () => {
+const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
   // --- STATE ---
   const [tasks, setTasks] = useState<Task[]>(() => {
     const saved = localStorage.getItem('binusFlowTasks');
@@ -25,33 +22,43 @@ const KanbanBoard = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDeleteAllOpen, setIsDeleteAllOpen] = useState(false);
 
-  // State Form
+  // State Form Input
   const [searchQuery, setSearchQuery] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<Task['status']>('To Do');
-  const [color, setColor] = useState(COLOR_OPTIONS[0].value);
+  
+  // Default warna ambil yang pertama dari list, atau putih kalau list kosong
+  const [color, setColor] = useState(availableColors[0]?.value || '#FFFFFF');
 
   // Save to LocalStorage
   useEffect(() => {
     localStorage.setItem('binusFlowTasks', JSON.stringify(tasks));
   }, [tasks]);
 
+  // Update default color jika availableColors berubah (misal user hapus warna)
+  useEffect(() => {
+    if (availableColors.length > 0) {
+      setColor(availableColors[0].value);
+    }
+  }, [availableColors]);
+
   const getTasksByStatus = (status: string) => {
     return tasks.filter(task => {
-        const matchesStatus = task.status === status;
-        const matchesSearch =
-          task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          task.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-        return matchesStatus && matchesSearch;
+      const matchesStatus = task.status === status;
+      const matchesSearch = 
+        task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        task.description.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return matchesStatus && matchesSearch;
     });
   };
+
   const resetForm = () => {
     setTitle('');
     setDescription('');
     setStatus('To Do');
-    setColor(COLOR_OPTIONS[0].value);
+    setColor(availableColors[0]?.value || '#FFFFFF');
   };
 
   // --- LOGIC: CREATE TASK ---
@@ -87,43 +94,35 @@ const KanbanBoard = () => {
     setIsDeleteAllOpen(false);
   };
 
-  // --- LOGIC BARU: DRAG AND DROP ---
+  // --- LOGIC: DRAG AND DROP ---
   const onDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
-
-    // 1. Jika dilepas di luar kolom, batalkan
     if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
-    // 2. Jika dilepas di tempat yang sama persis, batalkan
-    if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
-    ) {
-      return;
-    }
-
-    // 3. Update Status Task
-    // destination.droppableId berisi nama kolom tujuan ("To Do", "In Progress", dll)
     const newStatus = destination.droppableId as Task['status'];
-
     const updatedTasks = tasks.map(t => {
       if (t.id === draggableId) {
-        return { ...t, status: newStatus }; // Ganti statusnya
+        return { ...t, status: newStatus };
       }
       return t;
     });
-
     setTasks(updatedTasks);
   };
 
   return (
-    // WRAPPER UTAMA DRAG DROP
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="kanban-container">
         
         {/* TOOLBAR */}
         <div className="toolbar">
-          <input type="text" placeholder="Search..." className="search-bar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            className="search-bar" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <button className="icon-btn btn-add" onClick={() => { resetForm(); setIsCreateOpen(true); }}>
             <FaPlus />
           </button>
@@ -135,8 +134,6 @@ const KanbanBoard = () => {
         {/* BOARD GRID */}
         <div className="board-grid">
           {['To Do', 'In Progress', 'Done'].map((colStatus) => (
-            
-            // AREA DROPPABLE (KOLOM)
             <Droppable key={colStatus} droppableId={colStatus}>
               {(provided) => (
                 <div 
@@ -151,31 +148,21 @@ const KanbanBoard = () => {
                     <span>{colStatus}</span>
                   </div>
 
-                  {/* LIST KARTU */}
                   <div className="task-list">
                     {getTasksByStatus(colStatus).map((task, index) => (
-                      
-                      // AREA DRAGGABLE (KARTU)
                       <Draggable key={task.id} draggableId={task.id} index={index}>
                         {(provided) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            style={{
-                                ...provided.draggableProps.style,
-                                marginBottom: '10px' // Jaga jarak saat di-drag
-                            }}
+                            style={{ ...provided.draggableProps.style, marginBottom: '10px' }}
                           >
-                            <TaskCard 
-                              task={task} 
-                              onClick={() => setSelectedTask(task)} 
-                            />
+                            <TaskCard task={task} onClick={() => setSelectedTask(task)} />
                           </div>
                         )}
                       </Draggable>
                     ))}
-                    {/* Placeholder penting supaya kolom tidak menciut saat kosong */}
                     {provided.placeholder}
                   </div>
                 </div>
@@ -184,7 +171,7 @@ const KanbanBoard = () => {
           ))}
         </div>
 
-        {/* --- MODAL (TIDAK BERUBAH) --- */}
+        {/* --- MODAL CREATE TASK --- */}
         <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Create New Task">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div>
@@ -202,16 +189,21 @@ const KanbanBoard = () => {
                   <option>To Do</option><option>In Progress</option><option>Done</option>
                 </select>
               </div>
+              
+              {/* --- BAGIAN WARNA DINAMIS --- */}
               <div style={{ flex: 1 }}>
                 <label>Color</label>
-                <div style={{ display: 'flex', gap: '5px' }}>
-                  {COLOR_OPTIONS.map((opt) => (
-                    <div key={opt.value} onClick={() => setColor(opt.value)}
+                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                  {availableColors.map((opt) => (
+                    <div key={opt.id} onClick={() => setColor(opt.value)}
                       style={{
                         width: '30px', height: '30px', backgroundColor: opt.value, borderRadius: '50%', cursor: 'pointer',
                         border: color === opt.value ? '3px solid white' : 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                      }} />
+                      }} 
+                      title={opt.value}
+                    />
                   ))}
+                  {availableColors.length === 0 && <span style={{fontSize: '0.8rem', color: '#888'}}>No colors in config</span>}
                 </div>
               </div>
             </div>
@@ -222,6 +214,7 @@ const KanbanBoard = () => {
           </div>
         </Modal>
 
+        {/* --- MODAL VIEW & DELETE ALL (Tidak berubah) --- */}
         <Modal isOpen={!!selectedTask} onClose={() => setSelectedTask(null)} title="View Task Details">
           {selectedTask && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
