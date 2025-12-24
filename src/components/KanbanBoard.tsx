@@ -58,7 +58,7 @@ const KanbanBoard = ({ availableColors }: KanbanBoardProps) => {
   };
 
   const handleSaveTask = () => {
-    if (!title.trim()) {
+    if (title === "") {
       alert("Judul tidak boleh kosong!");
       return;
     }
