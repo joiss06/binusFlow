@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+# BinusFlow - Kanban Board Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+BinusFlow adalah aplikasi manajemen tugas berbasis web. Aplikasi ini dibangun untuk membantu pengguna mengelola tugas dengan status *To Do*, *In Progress*, dan *Done* menggunakan antarmuka *drag-and-drop* yang interaktif.
 
-Currently, two official plugins are available:
+## 🚀 Teknologi yang Digunakan
+Project ini dibangun menggunakan spesifikasi berikut:
+- **Framework:** React + Vite
+- **Language:** TypeScript
+- **Styling:** CSS Modules (Custom CSS)
+- **State Management:** React Hooks (useState, useEffect)
+- **Local Storage:** Untuk persistensi data (tanpa database backend)
+- **Library Tambahan:** `@hello-pangea/dnd` (Drag and Drop), `react-icons`, `react-router-dom`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Fitur Utama
+1.  **Kanban Board Interaktif:**
+    - Drag & drop task antar kolom (To Do, In Progress, Done).
+    - Create, Read, Update (Status), Delete (CRUD) Task.
+2.  **Manajemen Tampilan Task:**
+    - Fitur Zoom-in saat task diklik sekali.
+    - Modal View Detail saat task diklik dua kali.
+    - Indikator warna dinamis pada setiap task.
+3.  **Halaman Konfigurasi:**
+    - Menambah opsi warna baru dengan kode Hex.
+    - Menghapus opsi warna (Task dengan warna terhapus akan kembali ke default).
+4.  **Fitur Pencarian:** Filter task berdasarkan judul atau deskripsi secara real-time.
+5.  **Sidebar Responsif:** Navigasi yang dapat diminimalisir (expand/collapse).
 
-## React Compiler
+## 📦 Cara Menjalankan Project
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Ikuti langkah-langkah ini untuk menjalankan project di lokal komputer Anda:
 
-## Expanding the ESLint configuration
+1.  **Clone Repository**
+    ```bash
+    git clone <link-repository-kamu>
+    cd binusflow
+    ```
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2.  **Install Dependencies**
+    Pastikan Node.js sudah terinstall.
+    ```bash
+    npm install
+    ```
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+3.  **Jalankan Aplikasi**
+    ```bash
+    npm run dev
+    ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+4.  **Buka di Browser**
+    Aplikasi biasanya berjalan di `http://localhost:5173` (atau port lain yang muncul di terminal).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📷 Screenshots
+### Halaman Dashboard
+![Tampilan Dashboard](./assets/dashboardView.png)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Modal Create Task
+![Modal Create](./assets/createModal.png)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Modal Delete Task
+![Modal Delete](./assets/deleteModal.png)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Halaman Konfigurasi
+![Tampilan Configuration](./assets/configurationView.png)
+
+### Modal Add Color
+![Modal Add](./assets/addColorModal.png)
+
+### Tampilan Sekali Tekan Task
+![Tampilan Task](./assets/onceClickTask.png)
+
+---
+**Catatan:** Project ini dibuat sebagai bagian dari tugas Bootcamp Advanced IT Division.
