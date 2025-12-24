@@ -51,22 +51,22 @@ Ikuti langkah-langkah ini untuk menjalankan project di lokal komputer Anda:
 
 ## 📷 Screenshots
 ### Halaman Dashboard
-![Tampilan Dashboard](./assets/dashboardView.png)
+![Tampilan Dashboard](src/assets/dashboardView.png)
 
 ### Modal Create Task
-![Modal Create](./assets/createModal.png)
+![Modal Create](src/assets/createModal.png)
 
 ### Modal Delete Task
-![Modal Delete](./assets/deleteModal.png)
+![Modal Delete](src/assets/deleteModal.png)
 
 ### Halaman Konfigurasi
-![Tampilan Configuration](./assets/configurationView.png)
+![Tampilan Configuration](src/assets/configurationView.png)
 
 ### Modal Add Color
-![Modal Add](./assets/addColorModal.png)
+![Modal Add](src/assets/addColorModal.png)
 
 ### Tampilan Sekali Tekan Task
-![Tampilan Task](./assets/onceClickTask.png)
+![Tampilan Task](src/assets/onceClickTask.png)
 
 ---
 **Catatan:** Project ini dibuat sebagai bagian dari tugas Bootcamp Advanced IT Division.
