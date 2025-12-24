@@ -31,7 +31,7 @@ Ikuti langkah-langkah ini untuk menjalankan project di lokal komputer Anda:
 
 1.  **Clone Repository**
     ```bash
-    git clone <link-repository-kamu>
+    git clone https://github.com/joiss06/binusFlow
     cd binusflow
     ```
 
